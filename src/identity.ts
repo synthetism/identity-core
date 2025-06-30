@@ -109,4 +109,19 @@ export class Identity extends ValueObject<IIdentity> {
   toString(): string {
     return JSON.stringify(this.props);
   }
+
+  toJSON(): IIdentity {
+    return {
+      alias: this.props.alias,
+      did: this.props.did,
+      kid: this.props.kid,
+      publicKeyHex: this.props.publicKeyHex,
+      privateKeyHex: this.props.privateKeyHex,
+      provider: this.props.provider,
+      credential: this.props.credential,
+      metadata: this.props.metadata || {},
+      createdAt: this.props.createdAt,
+      version: this.props.version,
+    };
+  }
 }

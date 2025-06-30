@@ -1,17 +1,5 @@
-import type {SynetVerifiableCredential, BaseCredentialSubject} from '@synet/credentials';
 
-export interface Identity {
-  alias: string
-  did: string
-  kid: string
-  publicKeyHex: string
-  provider: string // did:key | did:web
-  credential: SynetVerifiableCredential<BaseCredentialSubject>
-  metadata?: Record<string, unknown>
-  createdAt: Date // Optional creation date for the vault  
-  version?: string
-  
-}
+export type RequireOnly<T, K extends keyof T> = Required<Pick<T, K>> & Partial<T>
 
 
 export type TKeyType = 'Ed25519' | 'Secp256k1' | 'Secp256r1' | 'X25519' | 'Bls12381G1' | 'Bls12381G2' 
@@ -80,6 +68,35 @@ export interface IKey {
   meta?: KeyMetadata | null
 }
 
+export interface IWGKey {
+    
+  kid: string
+
+  /**
+   * Key Management System
+   */
+  kms: string
+
+  /**
+   * Key type
+   */
+  type: 'Curve25519'
+
+  /**
+   * Public key
+   */
+  publicKeyHex: string
+
+  /**
+   * Optional. Private key
+   */
+  privateKeyHex?: string
+
+  /**
+   * Optional. Key metadata. This should be used to determine which algorithms are supported.
+   */
+  meta?: KeyMetadata | null
+}
 
 export interface IService {
   /**
@@ -118,5 +135,9 @@ export interface ManagedPrivateKey {
   privateKeyHex: string
   type: TKeyType
 }
+export type ImportablePrivateKey = RequireOnly<ManagedPrivateKey, 'privateKeyHex' | 'type'>
+
 
 export type ManagedKeyInfo = Omit<IKey, 'privateKeyHex'>
+
+export type MinimalImportableKey = RequireOnly<IKey, 'privateKeyHex' | 'type' | 'kms'>

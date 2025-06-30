@@ -64,6 +64,7 @@ type TKeyType =
   | 'X25519'       // ECDH key exchange
   | 'Bls12381G1'   // BLS signatures (G1)
   | 'Bls12381G2'   // BLS signatures (G2)
+  | 'Curve25519'   // WireGuard VPN keys
 ```
 
 #### `IKey`
@@ -175,6 +176,7 @@ Map Curve25519 to the closest supported algorithm:
 | Secp256r1 | Enterprise PKI | ✅ Native | Not needed |
 | X25519 | Key Exchange | ✅ Native | Not needed |
 | Bls12381G1/G2 | Advanced Signatures | ✅ Native | Not needed |
+| Curve25519 | WireGuard VPN | ❌ Limited | ✅ Required |
 
 ## Usage Examples
 

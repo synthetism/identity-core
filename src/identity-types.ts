@@ -14,7 +14,7 @@ export interface Identity {
 }
 
 
-export type TKeyType = 'Ed25519' | 'Secp256k1' | 'Secp256r1' | 'X25519' | 'Bls12381G1' | 'Bls12381G2' |  'Curve25519'
+export type TKeyType = 'Ed25519' | 'Secp256k1' | 'Secp256r1' | 'X25519' | 'Bls12381G1' | 'Bls12381G2' 
 
 export interface IIdentifier {
   /**
@@ -118,3 +118,5 @@ export interface ManagedPrivateKey {
   privateKeyHex: string
   type: TKeyType
 }
+
+export type ManagedKeyInfo = Omit<IKey, 'privateKeyHex'>

@@ -4,6 +4,14 @@ import { ValueObject } from '@synet/patterns';
 import type {SynetVerifiableCredential, BaseCredentialSubject} from '@synet/credentials';
 
 
+export interface UnitSchema {
+  name: string;
+  version: string;
+  capabilities?: string[];
+  children?: UnitSchema[]; // Child versions within family
+}
+
+
 export interface IIdentity {
   alias: string
   did: string
@@ -15,17 +23,36 @@ export interface IIdentity {
   metadata?: Record<string, unknown>
   createdAt: Date // Optional creation date for the vault  
   version?: string
-  
+}
+
+
+interface IIdentityProps {
+  alias: string;
+  did: string;
+  kid: string;
+  publicKeyHex: string;
+  privateKeyHex?: string;
+  provider: string;
+  credential: SynetVerifiableCredential<BaseCredentialSubject>;
+  metadata?: Record<string, unknown>;
+  createdAt: Date;
+  version?: string;
 }
   
-/**
- *  
- *
- * 
- */
-export class Identity extends ValueObject<IIdentity> {
+export class Identity extends ValueObject<IIdentityProps> {
+  private unitDNA: UnitSchema;
   private constructor(props: IIdentity) {
+
     super(props);
+
+     this.unitDNA = {
+      name: 'Identity Unit',
+      description: 'I can create and manage decentralized identities. call .help() to see my capabilities.',
+      version: props.version || '1.0.0',
+      capabilities: ['create', 'update', 'delete'],
+      children: [],
+    };
+
   }
 
   /**
@@ -61,14 +88,14 @@ export class Identity extends ValueObject<IIdentity> {
       return Result.fail('Vault Alias must be between 2 and 32 characters');
     }
 
-     const createdAt = props.createdAt || new Date();
+    const createdAt = props.createdAt ? new Date(props.createdAt) : new Date();
 
     return Result.success(new Identity({
       did: props.did,
       alias: props.alias,
       kid: props.kid,
       publicKeyHex: props.publicKeyHex,
-      privateKeyHex: props.publicKeyHex, // Assuming publicKeyHex is used as privateKeyHex
+      privateKeyHex: props.privateKeyHex, // Assuming publicKeyHex is used as privateKeyHex
       provider: props.provider,
       credential: props.credential,
       metadata: props.metadata || {},
@@ -76,6 +103,15 @@ export class Identity extends ValueObject<IIdentity> {
       version: props.version || '1.0.0',
     }));
   }
+
+    get whoami(): string {
+    return this.unitDNA.name;
+  }
+
+  get dna(): UnitSchema {
+    return this.unitDNA;
+  }
+
 
   get alias(): string {
     return this.props.alias;
@@ -106,11 +142,15 @@ export class Identity extends ValueObject<IIdentity> {
     return this.props.createdAt;
   }
 
+  get version(): string {
+    return this.props.version || '1.0.0';
+  }
+
   toString(): string {
     return JSON.stringify(this.props);
   }
 
-  toJSON(): IIdentity {
+  toJSON() {
     return {
       alias: this.props.alias,
       did: this.props.did,
@@ -122,6 +162,21 @@ export class Identity extends ValueObject<IIdentity> {
       metadata: this.props.metadata || {},
       createdAt: this.props.createdAt,
       version: this.props.version,
+    };
+  }
+
+  toDomain(): IIdentity {
+    return {
+      alias: this.alias,
+      did: this.did,
+      kid: this.kid,
+      publicKeyHex: this.publicKeyHex,
+      privateKeyHex: this.privateKeyHex,
+      provider: this.provider,
+      credential: this.credential,
+      metadata: this.metadata || {},
+      createdAt: this.createdAt || new Date(),
+      version: this.version || '1.0.0',
     };
   }
 }
